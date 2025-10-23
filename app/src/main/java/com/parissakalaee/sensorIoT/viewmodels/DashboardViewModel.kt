@@ -8,6 +8,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 class DashboardViewModel : ViewModel() {
 
@@ -24,11 +25,10 @@ class DashboardViewModel : ViewModel() {
         viewModelScope.launch {
             while (true) {
                 delay(2000)
-                i = i + 1.0
                 _sensors.value =  _sensors.value.map {
                     if(it.id == "Temp_XD"){
                         it.copy(
-                            value = i,
+                            value = Random.nextDouble(15.0, 30.0),
                             timestamp = System.currentTimeMillis()
                         )
                     }else{
