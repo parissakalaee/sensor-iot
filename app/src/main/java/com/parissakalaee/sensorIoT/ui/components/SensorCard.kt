@@ -31,6 +31,8 @@ fun SensorCard (sensor: SensorReading) {
             Text(sensor.unit)
             Spacer(modifier = Modifier.height(8.dp))
             Text(sensor.isConnected.toString())
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(sensor.timestamp.toString())
         }
     }
 }
