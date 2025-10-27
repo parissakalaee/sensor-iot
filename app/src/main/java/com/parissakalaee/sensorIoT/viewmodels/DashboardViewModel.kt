@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.parissakalaee.sensorIoT.data.SensorReading
 import com.parissakalaee.sensorIoT.data.SensorRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,48 +13,42 @@ import kotlin.random.Random
 
 class DashboardViewModel : ViewModel() {
 
-    init {
-        startSimulatingValues()
-    }
-
     private val repository = SensorRepository()
     private val _sensors = MutableStateFlow(repository.getSensors())
     val sensors: StateFlow<List<SensorReading>> = _sensors
 
+    init {
+        println("ViewModel created: ${this.hashCode()}")
+        startSimulatingValues()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        println("ViewModel cleared: ${this.hashCode()}")
+    }
+
     private fun startSimulatingValues() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             while (true) {
+                val temp = readTemperatureSensor()
+                updateSensor("Temp_XD", temp)
+                delay(1000)
+            }
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            while (true) {
+                val humidity = readHumiditySensor()
+                updateSensor("Humid_FR", humidity)
                 delay(2000)
-                _sensors.value = _sensors.value.map { sensor ->
-                    if(sensor.isConnected) {
-                        when (sensor.id) {
-                            "Temp_XD" -> {
-                                sensor.copy(
-                                    value = Random.nextDouble(15.0, 30.0),
-                                    timestamp = System.currentTimeMillis()
-                                )
-                            }
+            }
+        }
 
-                            "Humid_FR" -> {
-                                sensor.copy(
-                                    value = Random.nextDouble(30.0, 80.0),
-                                    timestamp = System.currentTimeMillis()
-                                )
-                            }
-
-                            "Pres_uY" -> {
-                                sensor.copy(
-                                    value = Random.nextDouble(980.0, 1020.0),
-                                    timestamp = System.currentTimeMillis()
-                                )
-                            }
-
-                            else -> sensor
-                        }
-                    } else {
-                        sensor
-                    }
-                }
+        viewModelScope.launch(Dispatchers.IO) {
+            while (true) {
+                val pressure = readPressureSensor()
+                updateSensor("Pres_uY", pressure)
+                delay(100)
             }
         }
     }
@@ -67,5 +62,31 @@ class DashboardViewModel : ViewModel() {
             }
         }
     }
+
+    fun readTemperatureSensor(): Double{
+        return Random.nextDouble(15.0, 30.0)
+    }
+
+    fun readHumiditySensor(): Double{
+        return Random.nextDouble(30.0, 80.0)
+    }
+
+    fun readPressureSensor(): Double{
+        return Random.nextDouble(980.0, 1020.0)
+    }
+
+    fun updateSensor(sensorId: String, newValue: Double) {
+        _sensors.value = _sensors.value.map { sensor ->
+            if (sensor.id == sensorId && sensor.isConnected) {
+                sensor.copy(
+                    value = newValue,
+                    timestamp = System.currentTimeMillis()
+                )
+            } else {
+                sensor
+            }
+        }
+    }
+
 }
 
