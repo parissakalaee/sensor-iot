@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -28,7 +29,7 @@ import java.util.Locale
 
 
 @Composable
-fun SensorCard (sensor: SensorReading) {
+fun SensorCard (sensor: SensorReading, onToggleConnection : (String) -> Unit) {
     Card (
         modifier = Modifier
             .fillMaxWidth()
@@ -75,6 +76,20 @@ fun SensorCard (sensor: SensorReading) {
             Text(
                 text = formatTimestamp(sensor.timestamp)
             )
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(
+                onClick = { onToggleConnection(sensor.id) },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(
+                    text = if (sensor.isConnected) {
+                        "Disconnect"
+                    } else {
+                        "Connect"
+                    },
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
         }
     }
 }
@@ -88,6 +103,7 @@ private fun formatTimestamp(timestamp: Long): String {
 @Composable
 fun SensorCardPreview() {
     SensorCard(
-        sensor = SensorReading("test", "Temperature", 22.5, "°C")
+        sensor = SensorReading("test", "Temperature", 22.5, "°C"),
+        onToggleConnection = { "test" }
     )
 }

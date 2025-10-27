@@ -24,29 +24,46 @@ class DashboardViewModel : ViewModel() {
         viewModelScope.launch {
             while (true) {
                 delay(2000)
-                _sensors.value =  _sensors.value.map {
-                    when(it.id){
-                        "Temp_XD" ->{
-                            it.copy(
-                                value = Random.nextDouble(15.0, 30.0),
-                                timestamp = System.currentTimeMillis()
-                            )
+                _sensors.value = _sensors.value.map { sensor ->
+                    if(sensor.isConnected) {
+                        when (sensor.id) {
+                            "Temp_XD" -> {
+                                sensor.copy(
+                                    value = Random.nextDouble(15.0, 30.0),
+                                    timestamp = System.currentTimeMillis()
+                                )
+                            }
+
+                            "Humid_FR" -> {
+                                sensor.copy(
+                                    value = Random.nextDouble(30.0, 80.0),
+                                    timestamp = System.currentTimeMillis()
+                                )
+                            }
+
+                            "Pres_uY" -> {
+                                sensor.copy(
+                                    value = Random.nextDouble(980.0, 1020.0),
+                                    timestamp = System.currentTimeMillis()
+                                )
+                            }
+
+                            else -> sensor
                         }
-                        "Humid_FR"->{
-                            it.copy(
-                                value = Random.nextDouble(30.0, 80.0),
-                                timestamp = System.currentTimeMillis()
-                            )
-                        }
-                        "Pres_uY"->{
-                            it.copy(
-                                value = Random.nextDouble(980.0, 1020.0),
-                                timestamp = System.currentTimeMillis()
-                            )
-                        }
-                        else -> it
+                    } else {
+                        sensor
                     }
                 }
+            }
+        }
+    }
+
+    fun toggleSensorConnection(sensorId: String) {
+        _sensors.value = _sensors.value.map { sensor ->
+            if (sensor.id == sensorId) {
+                sensor.copy(isConnected = !sensor.isConnected)
+            } else {
+                sensor
             }
         }
     }

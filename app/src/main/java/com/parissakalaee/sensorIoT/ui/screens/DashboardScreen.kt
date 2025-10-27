@@ -17,7 +17,12 @@ fun DashboardScreen(viewModel: DashboardViewModel = viewModel()) {
 
     LazyColumn {
         items(sensors) { sensor ->
-            SensorCard( sensor = sensor )
+            SensorCard(
+                sensor = sensor,
+                onToggleConnection = {
+                    viewModel.toggleSensorConnection(sensor.id)
+                }
+            )
         }
     }
 }
@@ -33,6 +38,7 @@ fun DashboardScreenPreview() {
 @Composable
 fun SensorCardPreview() {
     SensorCard(
-        sensor = SensorReading("test", "Temperature", 22.5, "°C")
+        sensor = SensorReading("test", "Temperature", 22.5, "°C"),
+        onToggleConnection = { "test"}
     )
 }
