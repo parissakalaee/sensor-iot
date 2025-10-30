@@ -8,6 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
@@ -28,37 +29,27 @@ class DashboardViewModel : ViewModel() {
     }
 
     private fun startSimulatingValues() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             while (true) {
+                delay(1000)
                 val temp = readTemperatureSensor()
                 updateSensor("Temp_XD", temp)
-                delay(1000)
             }
         }
 
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             while (true) {
+                delay(2000)
                 val humidity = readHumiditySensor()
                 updateSensor("Humid_FR", humidity)
-                delay(2000)
             }
         }
 
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             while (true) {
+                delay(100)
                 val pressure = readPressureSensor()
                 updateSensor("Pres_uY", pressure)
-                delay(100)
-            }
-        }
-    }
-
-    fun toggleSensorConnection(sensorId: String) {
-        _sensors.value = _sensors.value.map { sensor ->
-            if (sensor.id == sensorId) {
-                sensor.copy(isConnected = !sensor.isConnected)
-            } else {
-                sensor
             }
         }
     }
@@ -75,15 +66,29 @@ class DashboardViewModel : ViewModel() {
         return Random.nextDouble(980.0, 1020.0)
     }
 
+    fun toggleSensorConnection(sensorId: String) {
+        _sensors.update { sensors ->
+            sensors.map { sensor ->
+                if (sensor.id == sensorId) {
+                    sensor.copy(isConnected = !sensor.isConnected)
+                } else {
+                    sensor
+                }
+            }
+        }
+    }
+
     fun updateSensor(sensorId: String, newValue: Double) {
-        _sensors.value = _sensors.value.map { sensor ->
-            if (sensor.id == sensorId && sensor.isConnected) {
-                sensor.copy(
-                    value = newValue,
-                    timestamp = System.currentTimeMillis()
-                )
-            } else {
-                sensor
+        _sensors.update { sensors ->
+            sensors.map { sensor ->
+                if (sensor.id == sensorId && sensor.isConnected) {
+                    sensor.copy(
+                        value = newValue,
+                        timestamp = System.currentTimeMillis()
+                    )
+                } else {
+                    sensor
+                }
             }
         }
     }
