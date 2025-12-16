@@ -11,7 +11,7 @@ Android app for monitoring IoT sensors via MQTT, built with Jetpack Compose and 
 ### Hardware & Communication
 
 <img src="images/esp32_dht11_hardware.jpg" width="400" alt="ESP32 Hardware" />
-<img src="images/arduino_serialview.png" width="400" alt="Serial Output" />
+<img src="images/arduino_serialview.png"  alt="Serial Output" />
 
 *ESP32 with DHT11 sensor publishing data via MQTT*
 
