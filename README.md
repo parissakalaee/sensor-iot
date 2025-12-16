@@ -1,6 +1,6 @@
 # Sensor IoT Dashboard
 
-Android app for monitoring IoT sensors via MQTT, built with Jetpack Compose and modern Android architecture.
+End-to-End for monitoring IoT sensors via MQTT, built with Jetpack Compose and modern Android architecture.
 
 ## Demo
 
@@ -11,17 +11,25 @@ Android app for monitoring IoT sensors via MQTT, built with Jetpack Compose and 
 ### Hardware & Communication
 
 <img src="images/esp32_dht11_hardware.jpg" width="400" alt="ESP32 Hardware" />
-<img src="images/arduino_serialview.png"  alt="Serial Output" />
+<img src="images/arduino_serialview.png" alt="Serial Output" />
 
 *ESP32 with DHT11 sensor publishing data via MQTT*
 
-## Current Status
-- ✅ Jetpack Compose UI with Material 3
-- ✅ MVVM architecture with StateFlow
-- ✅ Hilt dependency injection
-- ✅ MQTT integration (Eclipse Paho)
-- ✅ Real-time sensor updates from ESP32
-- ✅ Thread-safe coroutines with structured concurrency
+## Project Structure
+
+- **`/firmware`** - ESP32 sensor firmware (PlatformIO/C++)
+- **`/app`** - Android monitoring application (Kotlin/Compose)
+
+## Architecture
+```
+ESP32 + DHT11 Sensor
+    ↓ WiFi
+MQTT Broker (test.mosquitto.org)
+    ↓ Subscribe
+Android App (Jetpack Compose)
+    ↓ StateFlow
+UI Layer
+```
 
 ## Features
 - Real-time temperature and humidity monitoring from DHT11 sensor
@@ -31,72 +39,120 @@ Android app for monitoring IoT sensors via MQTT, built with Jetpack Compose and 
 - Timestamp tracking for last update
 
 ## Tech Stack
-**Android:**
+
+### Firmware
+- **Platform:** PlatformIO
+- **Board:** ESP32 (ESP32-DevKit)
+- **Language:** C++ (Arduino framework)
+- **Protocol:** MQTT (Eclipse Paho)
+- **Sensor:** DHT11 (temperature/humidity)
+
+### Android
 - **Language:** Kotlin
 - **UI:** Jetpack Compose, Material 3
-- **Architecture:** MVVM with clean separation (ViewModel → Repository → Data Source)
+- **Architecture:** MVVM with clean separation
 - **DI:** Hilt (Dagger)
 - **Async:** Coroutines, Flow, StateFlow
-- **IoT:** MQTT (Eclipse Paho)
+- **IoT:** MQTT client (Eclipse Paho Android)
 
-**Hardware:**
-- **Board:** ESP32
-- **Sensor:** DHT11 (temperature & humidity)
-- **Framework:** Arduino
-- **Libraries:** WiFi, PubSubClient, DHT
+## Quick Start
+
+### 1. ESP32 Firmware
+
+```bash
+cd firmware
+
+# Configure WiFi credentials
+cp src/credentials.h.example src/credentials.h
+# Edit credentials.h with your WiFi SSID and password
+
+# Build and upload (requires PlatformIO)
+pio run --target upload
+
+# Monitor serial output
+pio device monitor
+```
+
+See [firmware/README.md](firmware/README.md) for detailed setup instructions.
+
+### 2. Android App
+
+```bash
+# Build and run
+./gradlew installDebug
+
+# Or open in Android Studio
+```
 
 ## Hardware Setup
+
+**Components:**
 - ESP32 development board
-- DHT11 sensor connected to GPIO 4
-- MQTT broker: test.mosquitto.org:1883
+- DHT11 temperature & humidity sensor
+- Breadboard and jumper wires
+
+**Wiring:**
+```
+DHT11 VCC  → ESP32 3.3V
+DHT11 Data → ESP32 GPIO4
+DHT11 GND  → ESP32 GND
+```
+
+**MQTT Configuration:**
+- Broker: test.mosquitto.org:1883
 - Topic: `parissa/sensors`
 - Message format: `{"temperature": 23.5, "humidity": 65.0}`
-- Update interval: 5 seconds
 
-## Architecture
+## Development
+
+### Prerequisites
+
+**Firmware:**
+- [VS Code](https://code.visualstudio.com/) with [PlatformIO IDE](https://platformio.org/install/ide?install=vscode)
+- ESP32 USB drivers (CH340/CP2102)
+
+**Android:**
+- Android Studio Hedgehog or later
+- JDK 11+
+- Android SDK API 24+
+
+### Project Architecture
+
+**Android (MVVM):**
 ```
-UI (Compose) 
-    ↓ observes StateFlow
+UI Layer (Compose)
+    ↓ observes
 ViewModel (Hilt injected)
-    ↓ collects Flow
-SensorRepository 
+    ↓ collects
+Repository Layer
     ↓ delegates to
-MqttRepository (callbackFlow)
-    ↓ subscribes via MQTT
-test.mosquitto.org 
-    ↑ publishes from
-ESP32 + DHT11 Sensor
+MqttDataSource (callbackFlow)
 ```
 
-## Running the Project
+## Learning Objectives
 
-**1. ESP32 Setup:**
-```bash
-# Open firmware/esp32_sensor.ino in Arduino IDE
-# Install required libraries:
-# - PubSubClient (by Nick O'Leary)
-# - DHT sensor library (by Adafruit)
-# Update WiFi credentials in the code
-# Upload to ESP32
-```
-
-## Project Structure
-```
-sensor-iot/
-├── app/                    # Android application
-│   ├── data/              # Repository & data models
-│   ├── di/                # Hilt dependency injection
-│   ├── ui/                # Compose UI components
-│   └── viewmodels/        # ViewModels
-└── firmware/              # ESP32 firmware
-    └── esp32_sensor      # Arduino sketch
-```
-
-## Learning Journey
 This project demonstrates:
-1. ✅ Modern Android development (Compose, Hilt, Coroutines)
-2. ✅ Reactive programming with Flow
-3. ✅ Thread-safe state management with StateFlow.update{}
-4. ✅ Converting callbacks to Flows with callbackFlow
-5. ✅ Hardware integration (ESP32 + DHT11)
-6. ✅ MQTT protocol for IoT communication
+
+1. **Modern Android Development**
+    - Jetpack Compose for declarative UI
+    - MVVM architecture with proper separation
+    - Hilt for dependency injection
+    - Coroutines & Flow for reactive programming
+
+2. **IoT Integration**
+    - MQTT protocol implementation
+    - Real-time data streaming
+    - Connection state management
+    - Hardware-software integration
+
+3. **Professional Tooling**
+    - PlatformIO for embedded development
+    - Git-based credential management
+    - Clean project structure
+    - Production-ready patterns
+
+## Author
+
+**Parissa Kalaee**  
+Senior Embedded Systems & Android Engineer  
+[LinkedIn](https://linkedin.com/in/parissakalaee)
