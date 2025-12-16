@@ -22,12 +22,16 @@ DHT11 Pin 4 (GND)  -> ESP32 GND
 2. Install [PlatformIO IDE extension](https://platformio.org/install/ide?install=vscode)
 
 ### Configuration
-1. Open `src/main.cpp`
-2. Update WiFi credentials:
-   ```cpp
+```
+   cd firmware
+
+# Configure WiFi credentials
+cp src/credentials.h.example src/credentials.h
+# Edit credentials.h with your WiFi SSID and password
+
    const char* ssid = "YOUR_WIFI_SSID";
    const char* password = "YOUR_WIFI_PASSWORD";
-   ```
+```
 
 ### Build & Upload
 
