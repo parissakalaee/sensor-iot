@@ -2,6 +2,21 @@
 
 Android app for monitoring IoT sensors via MQTT, built with Jetpack Compose and modern Android architecture.
 
+## Demo
+
+<img src="images/sensor_iot_dashboard.png" width="350" alt="Sensor Dashboard">
+
+*Real-time temperature and humidity monitoring with connection status*
+
+### Hardware & Communication
+
+<p float="left">
+  <img src="images/esp32_dht11_hardware.jpg" width="400" alt="ESP32 Hardware" />
+  <img src="images/arduino_serialview.png" width="400" alt="Serial Output" />
+</p>
+
+*ESP32 with DHT11 sensor publishing data via MQTT*
+
 ## Current Status
 - ✅ Jetpack Compose UI with Material 3
 - ✅ MVVM architecture with StateFlow
