@@ -12,7 +12,7 @@ const char* mqtt_topic = "parissa/sensors";
 
 // DHT11 Sensor settings
 #define DHTPIN 4        // GPIO4 (D4)
-#define DHTTYPE DHT11   // DHT11 sensor type
+#define DHTTYPE DHT11   // DHT11 sensor
 
 // Initialize objects
 DHT dht(DHTPIN, DHTTYPE);
