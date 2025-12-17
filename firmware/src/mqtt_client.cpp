@@ -4,7 +4,9 @@ MqttClient::MqttClient(const char* broker, int port, const char* topic)
     : broker(broker), port(port), topic(topic) {
 }
 
-void MqttClient::begin(WiFiClient& wifiClient) {
+void MqttClient::begin(Client& wifiClient, const char* user, const char* pass) {
+    username = user;
+    password = pass;
     client.setClient(wifiClient);
     client.setServer(broker, port);
     client.setCallback(callback);
@@ -33,7 +35,14 @@ void MqttClient::reconnect() {
         String clientId = "ESP32Client-";
         clientId += String(random(0xffff), HEX);
         
-        if (client.connect(clientId.c_str())) {
+        bool connected;
+        if (username && password) {
+            connected = client.connect(clientId.c_str(), username, password);
+        } else {
+            connected = client.connect(clientId.c_str());
+        }
+        
+        if (connected) {
             Serial.println("connected");
             client.subscribe(topic);
         } else {
