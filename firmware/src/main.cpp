@@ -2,6 +2,7 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include <DHT.h>
+#include <ArduinoJson.h>
 #include "credentials.h" 
 
 
@@ -87,11 +88,13 @@ void publish_sensor_data() {
   }
   
   // Create JSON payload
-  String payload = "{\"temperature\":";
-  payload += String(temperature, 2);
-  payload += ",\"humidity\":";
-  payload += String(humidity, 2);
-  payload += "}";
+JsonDocument doc;
+doc["temperature"] = temperature;
+doc["humidity"] = humidity;
+doc["timestamp"] = millis();
+
+String payload;
+serializeJson(doc, payload);
   
   // Publish to MQTT
   if (mqtt_client.publish(mqtt_topic, payload.c_str())) {
