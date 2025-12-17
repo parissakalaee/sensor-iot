@@ -1,9 +1,9 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include <PubSubClient.h>
-#include <DHT.h>
 #include <ArduinoJson.h>
 #include "credentials.h" 
+#include "sensor_reader.h"
 
 
 // MQTT Broker settings
@@ -16,7 +16,7 @@ const char* mqtt_topic = "parissa/sensors";
 #define DHTTYPE DHT11   // DHT11 sensor
 
 // Initialize objects
-DHT dht(DHTPIN, DHTTYPE);
+SensorReader sensorReader(DHTPIN, DHTTYPE);
 WiFiClient espClient;
 PubSubClient mqtt_client(espClient);
 
@@ -78,23 +78,22 @@ void callback(char* topic, byte* payload, unsigned int length) {
 
 void publish_sensor_data() {
   // Read sensor data
-  float temperature = dht.readTemperature();
-  float humidity = dht.readHumidity();
-  
+  SensorData data = sensorReader.read();
+
   // Check if readings are valid
-  if (isnan(temperature) || isnan(humidity)) {
+  if (!data.isValid) {
     Serial.println("Failed to read from DHT sensor!");
     return;
   }
-  
-  // Create JSON payload
-JsonDocument doc;
-doc["temperature"] = temperature;
-doc["humidity"] = humidity;
-doc["timestamp"] = millis();
 
-String payload;
-serializeJson(doc, payload);
+  // Create JSON payload
+  JsonDocument doc;
+  doc["temperature"] = data.temperature;
+  doc["humidity"] = data.humidity;
+  doc["timestamp"] = millis();
+
+  String payload;
+  serializeJson(doc, payload);
   
   // Publish to MQTT
   if (mqtt_client.publish(mqtt_topic, payload.c_str())) {
@@ -111,7 +110,7 @@ void setup() {
   Serial.println("=== ESP32 IoT Sensor ===");
   
   // Initialize DHT sensor
-  dht.begin();
+  sensorReader.begin();
   Serial.println("DHT sensor initialized");
   
   // Connect to WiFi
