@@ -1,0 +1,27 @@
+# ESP-IDF build artifacts
+build/
+sdkconfig.old
+dependencies.lock
+
+# Credentials - NEVER commit these!
+main/credentials.h
+
+# VSCode
+.vscode/
+*.code-workspace
+
+# macOS
+.DS_Store
+
+# Backup files
+*.old
+*.bak
+*~
+
+# Python
+__pycache__/
+*.pyc
+
+# Components cache
+components/esp-idf-lib/
+managed_components/

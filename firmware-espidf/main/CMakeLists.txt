@@ -1,0 +1,19 @@
+idf_component_register(
+    SRCS 
+        "main.cpp"
+        "wifi_manager.cpp"
+        "mqtt_wrapper.cpp"
+        "sensor_reader.cpp"
+    INCLUDE_DIRS 
+        "."
+    EMBED_FILES
+        "certs/ca_cert.pem"
+    REQUIRES
+        nvs_flash
+        esp_wifi
+        esp_event
+        esp_netif
+        mqtt
+        driver
+        dht 
+)
