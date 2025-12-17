@@ -1,9 +1,9 @@
 #include <Arduino.h>
-#include <WiFi.h>
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
 #include "credentials.h" 
 #include "sensor_reader.h"
+#include "wifi_manager.h"
 
 
 // MQTT Broker settings
@@ -17,31 +17,13 @@ const char* mqtt_topic = "parissa/sensors";
 
 // Initialize objects
 SensorReader sensorReader(DHTPIN, DHTTYPE);
+WiFiManager wifiManager;
 WiFiClient espClient;
 PubSubClient mqtt_client(espClient);
 
 // Timing
 unsigned long lastPublish = 0;
 const long publishInterval = 5000; // 5 seconds
-
-void setup_wifi() {
-  delay(10);
-  Serial.println();
-  Serial.print("Connecting to WiFi: ");
-  Serial.println(ssid);
-  
-  WiFi.begin(ssid, password);
-  
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-  
-  Serial.println();
-  Serial.println("WiFi connected!");
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
-}
 
 void reconnect_mqtt() {
   while (!mqtt_client.connected()) {
@@ -114,8 +96,8 @@ void setup() {
   Serial.println("DHT sensor initialized");
   
   // Connect to WiFi
-  setup_wifi();
-  
+  wifiManager.connect(WIFI_SSID, WIFI_PASSWORD);
+
   // Configure MQTT
   mqtt_client.setServer(mqtt_broker, mqtt_port);
   mqtt_client.setCallback(callback);
