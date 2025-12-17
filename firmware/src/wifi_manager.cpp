@@ -1,8 +1,7 @@
 #include "wifi_manager.h"
 
 void WiFiManager::connect(const char* ssid, const char* password) {
-    Serial.print("Connecting to WiFi: ");
-    Serial.println(ssid);
+    Serial.print("Connecting to WiFi... ");
     
     WiFi.begin(ssid, password);
     
