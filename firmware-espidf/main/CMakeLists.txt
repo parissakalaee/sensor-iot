@@ -6,8 +6,10 @@ idf_component_register(
         "sensor_reader.cpp"
     INCLUDE_DIRS 
         "."
-    EMBED_FILES
-        "certs/ca_cert.pem"
+    EMBED_FILES 
+        "certs/aws_root_ca.pem"
+        "certs/device_cert.pem"
+        "certs/device_key.pem"
     REQUIRES
         nvs_flash
         esp_wifi

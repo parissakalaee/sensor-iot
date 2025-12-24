@@ -1,4 +1,3 @@
-// firmware-espidf/main/sensor_reader.h
 #ifndef SENSOR_READER_H
 #define SENSOR_READER_H
 

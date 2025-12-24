@@ -8,7 +8,7 @@
 #include "credentials.h"
 
 #include "wifi_manager.h"
-#include "mqtt_wrapper.h"    // ← Make sure this is correct
+#include "mqtt_wrapper.h"    
 #include "sensor_reader.h"
 
 static const char *TAG = "MAIN";
@@ -25,7 +25,7 @@ static TaskHandle_t mqtt_task_handle = NULL;
 void sensor_task(void *pvParameters);
 void mqtt_task(void *pvParameters);
 
-extern "C" void app_main(void)  // ← Make sure extern "C" is here
+extern "C" void app_main(void)  
 {
     ESP_LOGI(TAG, "=== ESP32 IoT Sensor (ESP-IDF) ===");
     

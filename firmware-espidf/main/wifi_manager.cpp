@@ -1,4 +1,3 @@
-// firmware-espidf/main/wifi_manager.cpp
 #include "wifi_manager.h"
 #include "esp_wifi.h"
 #include "esp_event.h"
@@ -18,7 +17,6 @@ static const int MAX_RETRY = 5;
 /**
  * WiFi Event Handler - The heart of event-driven WiFi
  * 
- * This replaces your Arduino's blocking while loop!
  * Gets called automatically by ESP-IDF when WiFi events occur.
  */
 static void wifi_event_handler(void* arg, 

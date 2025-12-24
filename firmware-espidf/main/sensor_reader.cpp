@@ -1,4 +1,3 @@
-// firmware-espidf/main/sensor_reader.cpp
 #include "sensor_reader.h"
 #include "dht.h"
 #include "esp_log.h"

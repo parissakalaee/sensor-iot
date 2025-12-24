@@ -13,10 +13,9 @@ static esp_mqtt_client_handle_t mqtt_client = NULL;
 static const char* publish_topic = NULL;
 static bool is_connected = false;
 
-// External reference to embedded certificate
-// This will be embedded by CMakeLists.txt EMBED_FILES
-extern const uint8_t ca_cert_pem_start[] asm("_binary_ca_cert_pem_start");
-extern const uint8_t ca_cert_pem_end[]   asm("_binary_ca_cert_pem_end");
+extern const uint8_t aws_root_ca_pem_start[] asm("_binary_aws_root_ca_pem_start");
+extern const uint8_t device_cert_pem_start[] asm("_binary_device_cert_pem_start");
+extern const uint8_t device_key_pem_start[] asm("_binary_device_key_pem_start");
 
 /**
  * MQTT Event Handler - handles connection, disconnection, data
@@ -65,6 +64,9 @@ static void mqtt_event_handler(void *handler_args,
             if (event->error_handle->error_type == MQTT_ERROR_TYPE_TCP_TRANSPORT) {
                 ESP_LOGE(TAG, "  Last errno: %d", event->error_handle->esp_transport_sock_errno);
             }
+            if (event->error_handle->error_type == MQTT_ERROR_TYPE_CONNECTION_REFUSED) {
+                ESP_LOGE(TAG, "  Connection refused");
+            }
             break;
             
         default:
@@ -81,13 +83,20 @@ void mqtt_client_init(const char* broker_uri, const char* topic)
     
     publish_topic = topic;
     
-    // MQTT client configuration with TLS
+    // MQTT client configuration
     esp_mqtt_client_config_t mqtt_cfg = {};
-    mqtt_cfg.broker.address.uri = broker_uri;
     
-    // TLS Configuration
-    // mqtt_cfg.broker.verification.certificate = (const char*)ca_cert_pem_start;
-    // mqtt_cfg.broker.verification.certificate_len = ca_cert_pem_end - ca_cert_pem_start;
+    // For AWS IoT - set hostname explicitly for SNI
+    mqtt_cfg.broker.address.hostname = broker_uri;
+    mqtt_cfg.broker.address.transport = MQTT_TRANSPORT_OVER_SSL;
+    mqtt_cfg.broker.address.port = 8883;
+    
+    // AWS IoT TLS Configuration
+    mqtt_cfg.broker.verification.skip_cert_common_name_check = false;
+    mqtt_cfg.broker.verification.certificate = (const char*)aws_root_ca_pem_start;
+    
+    mqtt_cfg.credentials.authentication.certificate = (const char*)device_cert_pem_start;
+    mqtt_cfg.credentials.authentication.key = (const char*)device_key_pem_start;
     
     // Client identification
     mqtt_cfg.credentials.client_id = "ESP32-SensorIoT";

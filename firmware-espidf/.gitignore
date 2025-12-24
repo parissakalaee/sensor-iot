@@ -3,7 +3,7 @@ build/
 sdkconfig.old
 dependencies.lock
 
-# Credentials - NEVER commit these!
+# Credentials 
 main/credentials.h
 
 # VSCode
@@ -25,3 +25,10 @@ __pycache__/
 # Components cache
 components/esp-idf-lib/
 managed_components/
+
+# AWS IoT certificates
+*.pem
+*.crt
+*.key
+*.p12
+main/certs/
